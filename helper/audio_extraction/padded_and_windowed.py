@@ -1,9 +1,26 @@
 import librosa
 import numpy as np
-def extract_windowed_features(audio_list, classes, segment_duration=1.5, window_duration=1.0):
+
+def extract_windowed_features(audio_list, classes, segment_duration=1.5, window_duration=1.0, test_rate=0):
+    """
+    Extracts windowed features from a list of audio files.
+    :param audio_list: List of audio files to process
+    :param classes: Dictionary of class names and their corresponding numeric value
+    :param segment_duration: Duration in seconds of each segment
+    :param window_duration: Duration in seconds of each window
+    :param test_rate: Rate of test data
+    :return: List of windowed features and corresponding labels
+
+    example:
+
+    train_data, test_data = extract_windowed_features(audio_list, classes, segment_duration=1.5, window_duration=1.0, test_rate=0.2)
+    """
     windowed_features = []
+    test_windowed_features = []
 
     for audio_file in audio_list:
+        if not audio_file.endswith('.wav'):
+            continue
         # Load an audio file
         y, sr = librosa.load(audio_file, mono=True)  # Load audio in mono
 
@@ -33,10 +50,23 @@ def extract_windowed_features(audio_list, classes, segment_duration=1.5, window_
             # Flatten the chroma matrix to obtain a feature vector
             chroma_vector = chroma.flatten()
 
-            # Append the dictionary to the list
-            windowed_features.append([
-                chroma_vector,
-                classes[label]
-            ])
+            # count the number of test data
+            test_count = (len(y) - segment_samples + 1) // (int(sr * window_duration))
+            test_start = test_count - int(test_count * test_rate)
 
-    return windowed_features
+            # split the data into train and test
+            if start >= test_start * int(sr * window_duration):
+                test_windowed_features.append([
+                    chroma_vector,
+                    classes[label]
+                ])
+            else:
+                # Append the dictionary to the list
+                windowed_features.append([
+                    chroma_vector,
+                    classes[label]
+                ])
+
+    print("windowed_features: ", len(windowed_features))
+    print("test_windowed_features: ", len(test_windowed_features))
+    return windowed_features, test_windowed_features
