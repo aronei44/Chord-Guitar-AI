@@ -6,13 +6,15 @@ This project is a part of Chord Guitar AI Product. The purpose of this project i
 
 ## Dataset
 
-Dataset can be found from [here](https://www.kaggle.com/datasets/arwani/guitar-chord-audio-collection). Save audio files in audio folder.
+Dataset can be found [here](https://www.kaggle.com/datasets/arwani/guitar-chord-audio-collection). Save audio files in audio folder.
 
 ```
 - audio/
     - A.wav
     - A#.wav
     - etc
+- helper/
+- models/
 ```
 
 ## How to run
